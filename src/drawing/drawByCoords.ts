@@ -16,6 +16,7 @@ function getCtx() {
 
 function commit(item: paper.Item, layerId: string) {
   item.data = { layerId }
+  paper.view.update()
   history.snapshot()
 }
 

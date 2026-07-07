@@ -103,7 +103,7 @@ export function CoordInputPanel() {
       }
       setFlash(true)
       setTimeout(() => setFlash(false), 400)
-    } catch { /* ignore draw errors */ }
+    } catch (err) { console.error('[CoordInputPanel] draw error:', err) }
   }, [activeTool, values, polyPts]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onKey = (e: KeyboardEvent) => {
