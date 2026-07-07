@@ -1,20 +1,18 @@
 import paper from 'paper'
 import { ToolBase } from './ToolBase'
 import { snapPoint } from '../canvas/Snap'
-import { coordSys } from '../canvas/CoordinateSystem'
-
 export class WallTool extends ToolBase {
   private points: paper.Point[] = []
   private wallGroup: paper.Group | null = null
   private previewGroup: paper.Group | null = null
   private lastClickTime = 0
 
-  private get thicknessPx() {
-    return (this.ctx?.wallThickness ?? 200) * coordSys.pxPerMm
+  private get halfThickness() {
+    return (this.ctx?.wallThickness ?? 200) / 2
   }
 
   private drawWallSegment(from: paper.Point, to: paper.Point, group: paper.Group, color: paper.Color, dash = false) {
-    const half = this.thicknessPx / 2
+    const half = this.halfThickness
     const dir = to.subtract(from).normalize()
     const perp = new paper.Point(-dir.y, dir.x).multiply(half)
     const line1 = new paper.Path.Line(from.add(perp), to.add(perp))

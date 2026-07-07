@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { MenuBar } from './ui/MenuBar'
 import { Toolbar } from './ui/Toolbar'
 import { StatusBar } from './ui/StatusBar'
+import { CoordInputPanel } from './ui/CoordInputPanel'
 import { LayerPanel } from './layers/LayerPanel'
 import { TitleBlockPanel } from './titleblock/TitleBlockPanel'
 import { PaperCanvas } from './canvas/PaperCanvas'
@@ -49,6 +50,7 @@ export default function App() {
         {rightPanel === 'titleblock' && <TitleBlockPanel />}
       </div>
 
+      <CoordInputPanel />
       <StatusBar />
     </div>
   )

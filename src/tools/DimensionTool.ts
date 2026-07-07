@@ -1,11 +1,9 @@
 import paper from 'paper'
 import { ToolBase } from './ToolBase'
 import { snapPoint } from '../canvas/Snap'
-import { coordSys } from '../canvas/CoordinateSystem'
-
-const WITNESS_OFFSET_PX = 10
-const DIM_LINE_OFFSET_PX = 24
-const ARROW_SIZE_PX = 6
+const WITNESS_OFFSET = 5   // mm
+const DIM_LINE_OFFSET = 12 // mm
+const ARROW_SIZE = 3       // mm
 
 export class DimensionTool extends ToolBase {
   private start: paper.Point | null = null
@@ -20,21 +18,21 @@ export class DimensionTool extends ToolBase {
     const dir = p2.subtract(p1).normalize()
     const perp = new paper.Point(-dir.y, dir.x)
 
-    const offset = perp.multiply(DIM_LINE_OFFSET_PX)
+    const offset = perp.multiply(DIM_LINE_OFFSET)
     const d1 = p1.add(offset)
     const d2 = p2.add(offset)
 
     // Witness lines
-    const w1 = new paper.Path.Line(p1.add(perp.multiply(WITNESS_OFFSET_PX)), d1.add(perp.multiply(4)))
-    const w2 = new paper.Path.Line(p2.add(perp.multiply(WITNESS_OFFSET_PX)), d2.add(perp.multiply(4)))
+    const w1 = new paper.Path.Line(p1.add(perp.multiply(WITNESS_OFFSET)), d1.add(perp.multiply(4)))
+    const w2 = new paper.Path.Line(p2.add(perp.multiply(WITNESS_OFFSET)), d2.add(perp.multiply(4)))
 
     // Dimension line
     const dimLine = new paper.Path.Line(d1, d2)
 
     // Arrows
     const makeArrow = (base: paper.Point, direction: paper.Point) => {
-      const left = base.add(direction.multiply(ARROW_SIZE_PX)).add(perp.multiply(ARROW_SIZE_PX / 2))
-      const right = base.add(direction.multiply(ARROW_SIZE_PX)).subtract(perp.multiply(ARROW_SIZE_PX / 2))
+      const left = base.add(direction.multiply(ARROW_SIZE)).add(perp.multiply(ARROW_SIZE / 2))
+      const right = base.add(direction.multiply(ARROW_SIZE)).subtract(perp.multiply(ARROW_SIZE / 2))
       const a = new paper.Path([base, left, right])
       a.closed = true
       a.fillColor = color
@@ -45,15 +43,14 @@ export class DimensionTool extends ToolBase {
     const arrow1 = makeArrow(d1, dir)
     const arrow2 = makeArrow(d2, dir.multiply(-1))
 
-    // Distance label
-    const distPx = p1.getDistance(p2)
-    const distMm = distPx / coordSys.pxPerMm
+    // Distance label — coordinates already in mm
+    const distMm = p1.getDistance(p2)
     const label = new paper.PointText(d1.add(d2).divide(2).add(perp.multiply(8)))
     label.content = distMm >= 1000
       ? `${(distMm / 1000).toFixed(2)}m`
       : `${Math.round(distMm)}mm`
     label.fillColor = color
-    label.fontSize = 11
+    label.fontSize = 5.5
     label.justification = 'center'
 
     ;[w1, w2, dimLine].forEach((p) => {
