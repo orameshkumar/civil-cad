@@ -1,5 +1,6 @@
 import paper from 'paper'
 import { history } from '../history/HistoryManager'
+import { applyCurrentLayerStates } from '../layers/LayerManager'
 
 export interface ToolContext {
   activeLayerId: string
@@ -38,5 +39,6 @@ export abstract class ToolBase {
 
   protected commit() {
     history.snapshot()
+    applyCurrentLayerStates()
   }
 }

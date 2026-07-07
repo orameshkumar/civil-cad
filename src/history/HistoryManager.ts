@@ -1,4 +1,5 @@
 import paper from 'paper'
+import { applyCurrentLayerStates } from '../layers/LayerManager'
 
 const MAX_HISTORY = 50
 
@@ -19,12 +20,14 @@ class HistoryManager {
     if (this.cursor <= 0) return
     this.cursor--
     paper.project.importJSON(this.stack[this.cursor])
+    applyCurrentLayerStates()
   }
 
   redo() {
     if (this.cursor >= this.stack.length - 1) return
     this.cursor++
     paper.project.importJSON(this.stack[this.cursor])
+    applyCurrentLayerStates()
   }
 
   canUndo() { return this.cursor > 0 }

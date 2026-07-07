@@ -1,6 +1,7 @@
 import paper from 'paper'
 import { history } from '../history/HistoryManager'
 import { useDrawingStore } from '../store/useDrawingStore'
+import { applyCurrentLayerStates } from '../layers/LayerManager'
 
 const WITNESS_OFFSET = 5   // mm
 const DIM_LINE_OFFSET = 12 // mm
@@ -18,6 +19,7 @@ function commit(item: paper.Item, layerId: string) {
   item.data = { layerId }
   paper.view.update()
   history.snapshot()
+  applyCurrentLayerStates()
 }
 
 export function drawLine(x1: number, y1: number, x2: number, y2: number) {
