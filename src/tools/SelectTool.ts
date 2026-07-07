@@ -8,7 +8,7 @@ export class SelectTool extends ToolBase {
     super()
     this.paperTool.onMouseDown = (e: paper.ToolEvent) => {
       const hit = paper.project.hitTest(e.point, {
-        fill: true, stroke: true, tolerance: 6,
+        fill: true, stroke: true, tolerance: 6 / paper.view.zoom,
         match: (r: paper.HitResult) => r.item.data?.layerId !== 'titleblock',
       })
 

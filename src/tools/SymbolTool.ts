@@ -1,13 +1,12 @@
 import paper from 'paper'
 import { ToolBase } from './ToolBase'
 import { snapPoint } from '../canvas/Snap'
-import { coordSys } from '../canvas/CoordinateSystem'
 
 export type SymbolType = 'door-single' | 'door-double' | 'window-sliding' | 'window-fixed'
 
-function buildSymbol(type: SymbolType, origin: paper.Point, sizePx: number, color: paper.Color): paper.Group {
+function buildSymbol(type: SymbolType, origin: paper.Point, sizeMm: number, color: paper.Color): paper.Group {
   const g = new paper.Group()
-  const s = sizePx
+  const s = sizeMm
 
   switch (type) {
     case 'door-single': {
@@ -71,9 +70,9 @@ export class SymbolTool extends ToolBase {
     this.paperTool.onMouseMove = (e: paper.ToolEvent) => {
       const { point } = snapPoint(e.point.x, e.point.y, this.ctx?.snapEnabled ?? true)
       this.preview?.remove()
-      const sizePx = 900 * coordSys.pxPerMm / 1000   // ~900mm door
+      const sizeMm = 900  // 900mm door in project mm coordinates
       const sType = ((this.ctx as { symbolType?: string })?.symbolType ?? 'door-single') as SymbolType
-      this.preview = buildSymbol(sType, point, sizePx, new paper.Color(1, 1, 0, 0.6))
+      this.preview = buildSymbol(sType, point, sizeMm, new paper.Color(1, 1, 0, 0.6))
     }
 
     this.paperTool.onMouseDown = (e: paper.ToolEvent) => {
@@ -81,9 +80,9 @@ export class SymbolTool extends ToolBase {
       this.preview?.remove()
       this.preview = null
 
-      const sizePx = 900 * coordSys.pxPerMm / 1000
+      const sizeMm = 900
       const sType = ((this.ctx as { symbolType?: string })?.symbolType ?? 'door-single') as SymbolType
-      const sym = buildSymbol(sType, point, sizePx, this.layerColor())
+      const sym = buildSymbol(sType, point, sizeMm, this.layerColor())
       this.tagItem(sym)
       this.commit()
     }

@@ -72,7 +72,7 @@ export const useDrawingStore = create<DrawingState>((set) => ({
   activeTool: 'select',
   wallThickness: 200,
   hatchPattern: 'concrete',
-  fontSize: 14,
+  fontSize: 5,
   symbolType: 'door-single',
   snapEnabled: true,
   gridVisible: true,

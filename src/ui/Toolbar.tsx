@@ -89,12 +89,12 @@ export function Toolbar() {
             <input
               type="number"
               value={fontSize}
-              min={6} max={120}
+              min={1} max={30}
               onChange={(e) => setFontSize(Number(e.target.value))}
               className="w-10 bg-slate-700 text-slate-200 text-xs text-center rounded border border-slate-600 px-1 py-0.5"
-              title="Font size (px)"
+              title="Font size (mm)"
             />
-            <span className="text-[8px] text-slate-500 text-center">px</span>
+            <span className="text-[8px] text-slate-500 text-center">mm</span>
           </>
         )}
 
