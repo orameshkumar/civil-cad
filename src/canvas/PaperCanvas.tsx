@@ -56,6 +56,7 @@ export function PaperCanvas() {
   useEffect(() => {
     const canvas = canvasRef.current!
     paper.setup(canvas)
+    paper.view.zoom = coordSys.BASE_PX_PER_MM
 
     toolsRef.current = {
       select:    new SelectTool(),
@@ -166,15 +167,14 @@ export function PaperCanvas() {
     const onWheel = (e: WheelEvent) => {
       e.preventDefault()
       const factor = e.deltaY < 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR
-      coordSys.zoom *= factor
-
-      // Zoom towards cursor
       const rect = canvas.getBoundingClientRect()
-      const sx = e.clientX - rect.left
-      const sy = e.clientY - rect.top
-      coordSys.panX = sx - (sx - coordSys.panX) * factor
-      coordSys.panY = sy - (sy - coordSys.panY) * factor
-
+      const viewPt = new paper.Point(e.clientX - rect.left, e.clientY - rect.top)
+      // Scale Paper.js view so all items move correctly
+      paper.view.scale(factor, paper.view.viewToProject(viewPt))
+      // Sync coordSys for grid and status bar
+      coordSys.zoom = paper.view.zoom / coordSys.BASE_PX_PER_MM
+      coordSys.panX = paper.view.matrix.tx
+      coordSys.panY = paper.view.matrix.ty
       setZoom(coordSys.zoom)
       setPan(coordSys.panX, coordSys.panY)
       redrawGrid()
@@ -193,8 +193,11 @@ export function PaperCanvas() {
       if (!isPanning.current) return
       const dx = e.clientX - lastPan.current.x
       const dy = e.clientY - lastPan.current.y
-      coordSys.panX += dx; coordSys.panY += dy
+      // Translate in project (mm) units
+      paper.view.translate(new paper.Point(dx / paper.view.zoom, dy / paper.view.zoom))
       lastPan.current = { x: e.clientX, y: e.clientY }
+      coordSys.panX = paper.view.matrix.tx
+      coordSys.panY = paper.view.matrix.ty
       setPan(coordSys.panX, coordSys.panY)
       redrawGrid()
     }

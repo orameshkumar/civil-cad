@@ -1,8 +1,6 @@
 import paper from 'paper'
 import Drawing from 'dxf-writer'
 import type { Layer } from '../store/useDrawingStore'
-import { coordSys } from '../canvas/CoordinateSystem'
-
 function hexToAci(hex: string): number {
   const map: Record<string, number> = {
     '#ffffff': 7, '#e2e8f0': 7, '#60a5fa': 5, '#34d399': 3,
@@ -11,8 +9,6 @@ function hexToAci(hex: string): number {
   }
   return map[hex.toLowerCase()] ?? 7
 }
-
-function px(v: number) { return v / coordSys.pxPerMm }
 
 function exportItem(d: Drawing, item: paper.Item) {
   if (!item.visible) return
@@ -23,7 +19,7 @@ function exportItem(d: Drawing, item: paper.Item) {
     // Circle: 4 segments, closed, square bounds
     if (item.segments.length === 4 && item.closed &&
         Math.abs(item.bounds.width - item.bounds.height) < 1) {
-      d.drawCircle(px(item.bounds.center.x), -px(item.bounds.center.y), px(item.bounds.width / 2))
+      d.drawCircle((item.bounds.center.x), -(item.bounds.center.y), (item.bounds.width / 2))
       return
     }
 
@@ -32,7 +28,7 @@ function exportItem(d: Drawing, item: paper.Item) {
       const s = item.segments[0], e = item.segments[1]
       const hasCurve = s.handleOut.length > 1 || e.handleIn.length > 1
       if (!hasCurve) {
-        d.drawLine(px(s.point.x), -px(s.point.y), px(e.point.x), -px(e.point.y))
+        d.drawLine((s.point.x), -(s.point.y), (e.point.x), -(e.point.y))
         return
       }
     }
@@ -43,12 +39,12 @@ function exportItem(d: Drawing, item: paper.Item) {
     for (let i = 0; i <= steps; i++) {
       const t = (i / steps) * item.length
       const p = item.getPointAt(Math.min(t, item.length))
-      pts.push([px(p.x), -px(p.y)])
+      pts.push([(p.x), -(p.y)])
     }
     if (pts.length >= 2) d.drawPolyline(pts, item.closed)
 
   } else if (item instanceof paper.PointText) {
-    d.drawText(px(item.point.x), -px(item.point.y), (item.fontSize as number) || 10, 0, item.content)
+    d.drawText((item.point.x), -(item.point.y), (item.fontSize as number) || 10, 0, item.content)
 
   } else if (item instanceof paper.Group) {
     item.children.forEach((child) => exportItem(d, child))

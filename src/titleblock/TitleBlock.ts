@@ -1,6 +1,5 @@
 import paper from 'paper'
 import type { TitleBlockData } from '../store/useDrawingStore'
-import { coordSys } from '../canvas/CoordinateSystem'
 
 let tbGroup: paper.Group | null = null
 
@@ -16,31 +15,32 @@ export function drawTitleBlock(data: TitleBlockData, canvasW: number, canvasH: n
   tbGroup.locked = true
 
   const { w: pw, h: ph } = PAPER_SIZES[data.paperSize]
-  const pxW = pw * coordSys.pxPerMm
-  const pxH = ph * coordSys.pxPerMm
 
-  // Centre on canvas
-  const ox = (canvasW - pxW) / 2
-  const oy = (canvasH - pxH) / 2
+  // Centre paper on visible canvas area (in project/mm coordinates)
+  const tl = paper.view.viewToProject(new paper.Point(0, 0))
+  const canvasMmW = canvasW / paper.view.zoom
+  const canvasMmH = canvasH / paper.view.zoom
+  const ox = tl.x + (canvasMmW - pw) / 2
+  const oy = tl.y + (canvasMmH - ph) / 2
 
   const white = new paper.Color('#e2e8f0')
-  const thin = 0.8
-  const thick = 2
+  const thin = 0.4   // mm
+  const thick = 1.0  // mm
 
   // Border
   const border = new paper.Path.Rectangle(
-    new paper.Point(ox + 20 * coordSys.pxPerMm, oy + 10 * coordSys.pxPerMm),
-    new paper.Size(pxW - 30 * coordSys.pxPerMm, pxH - 20 * coordSys.pxPerMm)
+    new paper.Point(ox + 20, oy + 10),
+    new paper.Size(pw - 30, ph - 20)
   )
   border.strokeColor = white
   border.strokeWidth = thick
   tbGroup.addChild(border)
 
   // Title block box (bottom right, 180×50mm)
-  const tbW = 180 * coordSys.pxPerMm
-  const tbH = 50 * coordSys.pxPerMm
-  const tbX = ox + pxW - 10 * coordSys.pxPerMm - tbW
-  const tbY = oy + pxH - 10 * coordSys.pxPerMm - tbH
+  const tbW = 180
+  const tbH = 50
+  const tbX = ox + pw - 10 - tbW
+  const tbY = oy + ph - 10 - tbH
 
   const box = new paper.Path.Rectangle(new paper.Point(tbX, tbY), new paper.Size(tbW, tbH))
   box.strokeColor = white
@@ -64,13 +64,13 @@ export function drawTitleBlock(data: TitleBlockData, canvasW: number, canvasH: n
     const lbl = new paper.PointText(new paper.Point(bx, y))
     lbl.content = label
     lbl.fillColor = new paper.Color('#94a3b8')
-    lbl.fontSize = 6
+    lbl.fontSize = 3   // 3mm ≈ 6px at base zoom
     tbGroup!.addChild(lbl)
 
     const val = new paper.PointText(new paper.Point(bx, y + 8))
     val.content = value || '—'
     val.fillColor = white
-    val.fontSize = 8
+    val.fontSize = 4   // 4mm ≈ 8px at base zoom
     val.fontWeight = 'bold'
     tbGroup!.addChild(val)
   })

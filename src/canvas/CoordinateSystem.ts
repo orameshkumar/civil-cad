@@ -5,7 +5,7 @@ export class CoordinateSystem {
   panX: number = 0
   panY: number = 0
   // pixels per mm at zoom=1
-  private readonly BASE_PX_PER_MM = 2
+  readonly BASE_PX_PER_MM = 2
 
   get pxPerMm() { return this.BASE_PX_PER_MM * this.zoom }
 
